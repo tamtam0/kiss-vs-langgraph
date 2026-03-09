@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comparing KISS vs LangGraph Deep Research — An Empirical Exploration</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    color: #191919;
+    background: #f3f2ef;
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+  }
+  .article-container {
+    max-width: 720px;
+    margin: 24px auto;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 0 1px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.05);
+    overflow: hidden;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    background: #f8f9fa;
+    border-bottom: 1px solid #e0e0e0;
+    color: #191919;
+    padding: 52px 44px 44px;
+  }
+  .hero h1 {
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1.35;
+    margin-bottom: 14px;
+    color: #191919;
+  }
+  .hero .subtitle {
+    font-size: 15px;
+    color: #555;
+    line-height: 1.6;
+    max-width: 620px;
+  }
+  .hero .meta {
+    margin-top: 20px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .hero .chip {
+    background: #e8eef4;
+    color: #0a66c2;
+    border-radius: 16px;
+    padding: 4px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+  }
+
+  /* ── Content ── */
+  .content {
+    padding: 36px 44px 52px;
+  }
+  .content h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #191919;
+    margin: 36px 0 10px;
+  }
+  .content h2:first-child { margin-top: 0; }
+  .content h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin: 24px 0 8px;
+  }
+  .content p {
+    margin: 14px 0;
+    font-size: 15px;
+    color: #333;
+  }
+  .content ul, .content ol {
+    margin: 12px 0 12px 24px;
+    font-size: 15px;
+    color: #333;
+  }
+  .content li { margin: 5px 0; }
+  .content strong { color: #191919; }
+  a { color: #0a66c2; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* ── Dividers ── */
+  .sep {
+    height: 1px;
+    background: #e8e8e8;
+    margin: 36px 0;
+  }
+
+  /* ── Metric Cards ── */
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+    margin: 20px 0;
+  }
+  .kpi {
+    background: #f8f9fa;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    padding: 14px 12px;
+    text-align: center;
+  }
+  .kpi .num {
+    font-size: 26px;
+    font-weight: 700;
+    color: #0a66c2;
+    line-height: 1.2;
+  }
+  .kpi .num.green { color: #057642; }
+  .kpi .num.amber { color: #b24020; }
+  .kpi .lbl {
+    font-size: 11px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-top: 4px;
+  }
+
+  /* ── Tables ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 13.5px;
+  }
+  th {
+    background: #f3f6f8;
+    text-align: left;
+    padding: 9px 10px;
+    font-weight: 600;
+    color: #191919;
+    border-bottom: 2px solid #ddd;
+  }
+  td {
+    padding: 9px 10px;
+    border-bottom: 1px solid #eee;
+    color: #333;
+  }
+  tr:hover td { background: #fafbfc; }
+  .win { color: #057642; font-weight: 600; }
+  .lose { color: #999; }
+
+  /* ── Bar Charts ── */
+  .bars { margin: 16px 0; }
+  .bar-row {
+    display: flex;
+    align-items: center;
+    margin: 6px 0;
+    gap: 10px;
+  }
+  .bar-lbl {
+    width: 110px;
+    font-size: 12.5px;
+    font-weight: 500;
+    text-align: right;
+    flex-shrink: 0;
+    color: #555;
+  }
+  .bar-track {
+    flex: 1;
+    height: 24px;
+    background: #f0f0f0;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #fff;
+    white-space: nowrap;
+  }
+  .bar-fill.kiss { background: #0a66c2; }
+  .bar-fill.lg { background: #7c3aed; }
+  .bar-fill.evo1 { background: #2d8cf0; }
+  .bar-fill.evo2 { background: #5bb5ff; }
+
+  /* ── Callouts ── */
+  .box {
+    border-left: 4px solid #0a66c2;
+    background: #f0f7ff;
+    padding: 14px 18px;
+    margin: 20px 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 14.5px;
+    line-height: 1.65;
+  }
+  .box.green { background: #f0faf0; border-left-color: #057642; }
+  .box.amber { background: #fffbf0; border-left-color: #b24020; }
+  .box.neutral { background: #f8f8f8; border-left-color: #666; }
+
+  /* ── Code ── */
+  .code {
+    background: #1e1e1e;
+    color: #d4d4d4;
+    border-radius: 6px;
+    padding: 16px 20px;
+    margin: 14px 0;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 12.5px;
+    overflow-x: auto;
+    line-height: 1.55;
+    white-space: pre;
+  }
+  .code .c { color: #6a9955; }
+  .code .k { color: #569cd6; }
+  .code .s { color: #ce9178; }
+
+  /* ── Arch Diagrams ── */
+  .arch {
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 18px 20px;
+    margin: 14px 0;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 12px;
+    line-height: 1.65;
+    white-space: pre;
+    overflow-x: auto;
+    color: #333;
+  }
+
+  /* ── Footer ── */
+  .footer {
+    background: #f3f6f8;
+    padding: 22px 44px;
+    font-size: 13px;
+    color: #666;
+    border-top: 1px solid #e8e8e8;
+    line-height: 1.7;
+  }
+
+  @media (max-width: 600px) {
+    .hero { padding: 28px 20px; }
+    .hero h1 { font-size: 21px; }
+    .content { padding: 24px 20px; }
+    .kpi-row { grid-template-columns: repeat(2, 1fr); }
+    .bar-lbl { width: 80px; font-size: 11px; }
+    .footer { padding: 18px 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="article-container">
+
+<!-- ════════════════════ HERO ════════════════════ -->
+<div class="hero">
+  <h1>Comparing KISS vs LangGraph Deep Research: An Empirical Exploration</h1>
+  <div class="subtitle">I use GEPA through DSPy for prompt optimization. When I saw KISS had its own GEPA implementation, I wanted to understand how it works differently&mdash;and how a single-agent framework compares to LangGraph's multi-stage pipeline on real tasks. This is what the numbers showed.</div>
+  <div class="meta">
+    <span class="chip">AI Agents</span>
+    <span class="chip">Prompt Evolution</span>
+    <span class="chip">Benchmark Notes</span>
+    <span class="chip">Open Source</span>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ════════════════════ QUICK TAKE ════════════════════ -->
+<div class="box neutral" style="margin-bottom:28px;margin-top:0">
+  <strong>Quick take:</strong> KISS was 3.1&times; faster and 2.8&times; cheaper than LangGraph's multi-stage pipeline, with a 1-point average quality gap favoring LangGraph (6.3 vs 7.3). On the widest question (7 tickers, macro risks), KISS actually scored <em>higher</em>. Prompt evolution via <code>prompt_refiner_agent</code> doubled token usage across runs without consistently lifting quality&mdash;the refiner's heuristic was "gather more data," but more data didn't equal better output.
+</div>
+
+<!-- ════════════════════ MOTIVATION ════════════════════ -->
+<h2>Why This Exploration</h2>
+
+<p>I've been using <strong>GEPA (Genetic-Pareto prompt evolution)</strong> through <a href="https://github.com/stanfordnlp/dspy">DSPy</a> for a while&mdash;it's a remarkably effective technique for optimizing compound AI system prompts via natural language reflection instead of reinforcement learning (<a href="https://arxiv.org/abs/2507.19457">arXiv:2507.19457</a>).</p>
+
+<p>When I came across the <a href="https://github.com/ksenxx/kiss_ai">KISS Agent Framework</a> by Koushik Sen at UC Berkeley, two things caught my attention:</p>
+
+<ol>
+  <li><strong>KISS has a native GEPA implementation</strong>&mdash;not through DSPy, but integrated directly into the framework alongside a lighter-weight <code>prompt_refiner_agent</code> that uses trajectory-aware reflection to evolve system prompts between runs.</li>
+  <li><strong>KISS takes a single-agent approach</strong>&mdash;one ReAct agent with all tools, no sub-agent decomposition&mdash;which is a fundamentally different architecture from what LangGraph's <a href="https://github.com/langchain-ai/open_deep_research">Open Deep Research</a> does.</li>
+</ol>
+
+<p>I wanted to understand both dimensions empirically: how does single-agent vs. multi-agent compare on real tasks, and what happens when you layer KISS's prompt evolution on top? Rather than argue for one approach, I set up controlled experiments and collected the data.</p>
+
+<div class="sep"></div>
+
+<!-- ════════════════════ GEPA CONTEXT ════════════════════ -->
+<h2>GEPA: Two Implementations, Different Integration Points</h2>
+
+<p>For context on why I found this interesting&mdash;GEPA's core algorithm is straightforward:</p>
+
+<ol>
+  <li>Maintain a pool of prompt candidates</li>
+  <li>Evaluate on dev/val splits with instance-level tracking</li>
+  <li>Reflect on trajectories to propose mutations</li>
+  <li>Gate mutations (only accept if they don't regress on the minibatch)</li>
+  <li>Update a Pareto frontier balancing quality, cost, and latency</li>
+</ol>
+
+<p><strong>In DSPy</strong>, GEPA sits as an external optimizer&mdash;you define your pipeline, provide training examples with a metric, and GEPA evolves the prompts offline. The pipeline itself is unchanged at inference time.</p>
+
+<p><strong>In KISS</strong>, the integration is different. KISS provides two mechanisms:</p>
+<ul>
+  <li><code>GEPA</code> class (<code>kiss.agents.gepa</code>)&mdash;the full optimization loop with Pareto frontiers, mutation gating, and population management. Requires training examples and a scoring function, similar to DSPy's usage.</li>
+  <li><code>prompt_refiner_agent</code> (<code>kiss.agents.kiss</code>)&mdash;a lighter mechanism that takes the original prompt, the previous prompt, and the agent's execution trajectory, then produces a refined prompt via a single non-agentic LLM call. No training set required.</li>
+</ul>
+
+<p>The <code>prompt_refiner_agent</code> is what you'd use between runs in a production setting where you don't have labeled training data&mdash;it learns from the agent's own execution trace. This is what I tested in the evolution benchmark below.</p>
+
+<div class="sep"></div>
+
+<!-- ════════════════════ EXPERIMENT 1: SETUP ════════════════════ -->
+<h2>Experiment 1: KISS vs LangGraph on Real Finance Tasks</h2>
+
+<h3>Setup</h3>
+
+<p>Both frameworks ran on <strong>3 finance research questions</strong> requiring real-time data retrieval and synthesis:</p>
+
+<table>
+  <thead><tr><th>#</th><th>Question</th></tr></thead>
+  <tbody>
+    <tr><td>Q1</td><td>Compare NVIDIA vs AMD as AI chip investments&mdash;prices, P/E, revenue growth, market positioning</td></tr>
+    <tr><td>Q2</td><td>Analyze Tesla stock fundamentals + search for robotaxi news impact on valuation</td></tr>
+    <tr><td>Q3</td><td>Risk assessment of all Magnificent 7 stocks&mdash;P/E, YTD returns, macro risks, overvaluation ranking</td></tr>
+  </tbody>
+</table>
+
+<p><strong>Controlled variables:</strong></p>
+<ul>
+  <li>Same model: Claude Opus 4.6 (Databricks-hosted endpoint)</li>
+  <li>Same tool functions: <code>get_stock_info</code> (yfinance), <code>get_stock_history</code> (yfinance), <code>web_search</code> (DuckDuckGo API)</li>
+  <li>Same quality judge: LLM-scored on data grounding, analysis depth, recency, and actionability (1&ndash;10 scale)</li>
+  <li>Single run per question per framework (n=1 per cell)</li>
+</ul>
+
+<h3>Architecture Comparison</h3>
+
+<p><strong>KISS</strong> uses <code>KISSAgent.run()</code>&mdash;a single ReAct agent that receives all tools as plain Python callables:</p>
+<div class="arch">Question + Tools
+       |
+       v
+[KISSAgent.run()] ---> calls tools as needed ---> Report
+  (ReAct loop, up to 15 rounds)</div>
+
+<p><strong>LangGraph</strong> uses a compiled <code>StateGraph</code> reproducing the <a href="https://github.com/langchain-ai/open_deep_research">Open Deep Research</a> 4-stage pipeline:</p>
+<div class="arch">Question
+  |
+  v
+[Research Brief] -----> 3 sub-topics
+  |
+  v
+[Researcher 1]  [Researcher 2]  [Researcher 3]
+ (tools x6)      (tools x6)      (tools x6)
+  |               |               |
+  v               v               v
+[Compress Research]
+  |
+  v
+[Final Report]</div>
+
+<p>Tool functions are identical. KISS receives them as <code>[get_stock_info, get_stock_history, web_search]</code>. LangGraph wraps them via <code>@langchain_tool</code> decorators calling the same underlying functions.</p>
+
+<div class="sep"></div>
+
+<!-- ════════════════════ EXPERIMENT 1: RESULTS ════════════════════ -->
+<h3>Results: Single Run Comparison</h3>
+
+<div class="kpi-row">
+  <div class="kpi"><div class="num green">3.1x</div><div class="lbl">KISS Faster</div></div>
+  <div class="kpi"><div class="num green">4.1x</div><div class="lbl">Fewer Tokens</div></div>
+  <div class="kpi"><div class="num green">2.8x</div><div class="lbl">Lower Cost</div></div>
+  <div class="kpi"><div class="num amber">+1.0</div><div class="lbl">LG Quality Edge</div></div>
+</div>
+
+<table>
+  <thead>
+    <tr><th>Metric</th><th>KISS</th><th>LangGraph ODR</th><th>Delta</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Avg. Latency</td><td>88 s</td><td>274 s</td><td>3.1x</td></tr>
+    <tr><td>Avg. Tokens</td><td>20,793</td><td>85,449</td><td>4.1x</td></tr>
+    <tr><td>Avg. Cost</td><td>$0.73</td><td>$2.04</td><td>2.8x</td></tr>
+    <tr><td>Avg. Tool Calls</td><td>15.0</td><td>55.7</td><td>3.7x</td></tr>
+    <tr><td>Avg. Quality (1-10)</td><td>6.3</td><td>7.3</td><td>LG +1.0</td></tr>
+    <tr><td>Avg. Output Length</td><td>6,533 chars</td><td>14,019 chars</td><td>2.1x</td></tr>
+    <tr><td>Questions Passed</td><td>3/3</td><td>3/3</td><td>Equal</td></tr>
+  </tbody>
+</table>
+
+<h3>Per-Question Breakdown</h3>
+
+<table>
+  <thead>
+    <tr><th></th><th colspan="2">Q1: NVDA vs AMD</th><th colspan="2">Q2: Tesla</th><th colspan="2">Q3: Mag 7</th></tr>
+    <tr><th>Metric</th><th>KISS</th><th>LG</th><th>KISS</th><th>LG</th><th>KISS</th><th>LG</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Time</td><td>79s</td><td>272s</td><td>79s</td><td>243s</td><td>106s</td><td>308s</td></tr>
+    <tr><td>Tokens</td><td>18.2K</td><td>78.4K</td><td>14.7K</td><td>53.6K</td><td>29.5K</td><td>124.3K</td></tr>
+    <tr><td>Cost</td><td>$0.64</td><td>$1.94</td><td>$0.52</td><td>$1.48</td><td>$1.03</td><td>$2.70</td></tr>
+    <tr><td>Tool Calls</td><td>13</td><td>43</td><td>9</td><td>36</td><td>23</td><td>88</td></tr>
+    <tr><td>Quality</td><td>7</td><td>8</td><td>5</td><td>8</td><td>7</td><td>6</td></tr>
+  </tbody>
+</table>
+
+<div class="box amber" style="margin:12px 0 20px">
+  <strong>Q2 gap (KISS&nbsp;5, LangGraph&nbsp;8)&mdash;the largest single-question difference:</strong> KISS made only 9 tool calls on the Tesla question&mdash;it retrieved fundamentals but under-invested in the robotaxi news angle, producing a report the judge scored low on recency and actionability. LangGraph's 36 tool calls included dedicated <code>web_search</code> passes across all three researchers, surfacing recent regulatory and Waymo coverage. This points to a structural difference: KISS's ReAct loop, given a "fetch fundamentals first" signal in the question, deprioritized search; LangGraph's parallel researchers independently ran news passes regardless. A task-specific system prompt&mdash;or an evolved one&mdash;could close this gap.
+</div>
+
+<h3>Latency per Question</h3>
+<div class="bars">
+  <div class="bar-row"><div class="bar-lbl">KISS Q1</div><div class="bar-track"><div class="bar-fill kiss" style="width:26%">79s</div></div></div>
+  <div class="bar-row"><div class="bar-lbl">LangGraph Q1</div><div class="bar-track"><div class="bar-fill lg" style="width:88%">272s</div></div></div>
+  <div class="bar-row"><div class="bar-lbl">KISS Q2</div><div class="bar-track"><div class="bar-fill kiss" style="width:26%">79s</div></div></div>
+  <div class="bar-row"><div class="bar-lbl">LangGraph Q2</div><div class="bar-track"><div class="bar-fill lg" style="width:79%">243s</div></div></div>
+  <div class="bar-row"><div class="bar-lbl">KISS Q3</div><div class="bar-track"><div class="bar-fill kiss" style="width:34%">106s</div></div></div>
+  <div class="bar-row"><div class="bar-lbl">LangGraph Q3</div><div class="bar-track"><div class="bar-fill lg" style="width:100%">308s</div></div></div>
+</div>
+
+<h3>Tool Calls per Question</h3>
+<div class="bars">
+  <div class="bar-row"><div class="bar-lbl">KISS Q1</div><div class="bar-track"><div class="bar-fill kiss" style="min-width:22px;width:15%">13</div></div></div>
+  <div class="bar-row"><div class="bar-lbl">LangGraph Q1</div><div class="bar-track"><div class="bar-fill lg" style="width:49%">43</div></div></div>
+  <div class="bar-row"><div class="bar-lbl">KISS Q2</div><div class="bar-track"><div class="bar-fill kiss" style="min-width:18px;width:10%">9</div></div></div>
+  <div class="bar-row"><div class="bar-lbl">LangGraph Q2</div><div class="bar-track"><div class="bar-fill lg" style="width:41%">36</div></div></div>
+  <div class="bar-row"><div class="bar-lbl">KISS Q3</div><div class="bar-track"><div class="bar-fill kiss" style="width:26%">23</div></div></div>
+  <div class="bar-row"><div class="bar-lbl">LangGraph Q3</div><div class="bar-track"><div class="bar-fill lg" style="width:100%">88</div></div></div>
+</div>
+
+<div class="box neutral">
+  <strong>Observation:</strong> Q3 (Magnificent 7, 7 tickers) is notable. LangGraph's three researchers each independently pulled data for all 7 tickers&mdash;88 tool calls, 124K tokens. KISS used 23 tool calls and scored 7/10 vs LangGraph's 6/10 on this specific question. On Q1 and Q2, LangGraph scored higher. Sample size is n=1 per cell.
+</div>
+
+<div class="sep"></div>
+
+<!-- ════════════════════ EXPERIMENT 2: EVOLUTION ════════════════════ -->
+<h2>Experiment 2: KISS Prompt Evolution Across Runs</h2>
+
+<p>This is the experiment I was most curious about. KISS provides a <code>prompt_refiner_agent</code> that takes the execution trajectory from a completed run and produces a refined system prompt. The mechanism is straightforward&mdash;a non-agentic LLM call that analyzes what the agent did, what worked, what didn't, and proposes prompt modifications.</p>
+
+<p>I wanted to see: <strong>does quality improve when you feed the trajectory back?</strong></p>
+
+<h3>Protocol</h3>
+<ol>
+  <li><strong>Run 1 (Baseline):</strong> Static system prompt. Record output, quality score, and full trajectory.</li>
+  <li><strong>Evolve:</strong> Feed trajectory into <code>prompt_refiner_agent(original_prompt, previous_prompt, trajectory)</code>. Get refined prompt.</li>
+  <li><strong>Run 2 (Evolution #1):</strong> Use refined prompt. Record everything. Evolve again.</li>
+  <li><strong>Run 3 (Evolution #2):</strong> Use double-evolved prompt. Record everything.</li>
+</ol>
+
+<p>Same 3 questions. Same tools. Same model. The only variable changing between runs is the system prompt.</p>
+
+<h3>Results: Evolution Across 3 Runs</h3>
+
+<table>
+  <thead>
+    <tr><th>Metric</th><th>Baseline</th><th>Evolution #1</th><th>Evolution #2</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Avg. Quality (1-10)</td><td>6.7</td><td>6.7</td><td>6.3</td></tr>
+    <tr><td>Avg. Latency</td><td>97.9s</td><td>106.2s</td><td>117.5s</td></tr>
+    <tr><td>Avg. Tokens</td><td>15,634</td><td>31,559</td><td>32,114</td></tr>
+    <tr><td>Avg. Cost</td><td>$0.55</td><td>$1.10</td><td>$1.12</td></tr>
+    <tr><td>Avg. Tool Calls</td><td>13.3</td><td>20.7</td><td>21.0</td></tr>
+    <tr><td>Avg. Output Length</td><td>9,611 chars</td><td>10,486 chars</td><td>4,664 chars</td></tr>
+    <tr><td>Questions Passed</td><td>3/3</td><td>3/3</td><td>3/3</td></tr>
+  </tbody>
+</table>
+
+<h3>Quality Per Question Across Runs</h3>
+
+<table>
+  <thead>
+    <tr><th>Question</th><th>Baseline</th><th>Evo #1</th><th>Evo #2</th><th>Trend</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Q1: NVDA vs AMD</td><td>7</td><td>7</td><td>5</td><td>-2</td></tr>
+    <tr><td>Q2: Tesla</td><td>6</td><td>6</td><td>7</td><td>+1</td></tr>
+    <tr><td>Q3: Mag 7 Risk</td><td>7</td><td>7</td><td>7</td><td>0</td></tr>
+  </tbody>
+</table>
+
+<h3>What the Evolved Prompts Look Like</h3>
+
+<p>The <code>prompt_refiner_agent</code> made the system prompt progressively more detailed across iterations. The baseline prompt was 6 lines. After two evolution passes:</p>
+
+<ul>
+  <li>Added: "Call <code>get_stock_info</code> once per ticker separately"</li>
+  <li>Added: "Make all tool calls early&mdash;do not interleave lengthy analysis between tool calls"</li>
+  <li>Added: "If a tool call fails, retry with adjusted parameters or use web_search as fallback"</li>
+  <li>Added: "Cite the source (e.g., 'per get_stock_info') and note the date/time context"</li>
+  <li>Added explicit section structure requirements (Executive Summary, Individual Analysis, Comparative Analysis, etc.)</li>
+</ul>
+
+<p>The prompt grew from ~400 characters to ~1,800 characters.</p>
+
+<p>Why did the refiner converge on "gather more data" as its improvement heuristic? The answer is visible in the baseline trajectory: the agent would retrieve two or three tickers' data, begin its analysis mid-loop, then realize it was missing the remaining tickers and either estimate or skip them. The refiner read this gap and added explicit per-ticker instructions with an early data-gathering phase. The diagnosis was accurate&mdash;data coverage was a real baseline weakness. But the refiner had no mechanism to notice that expanding the tool call budget was eating into the output depth budget. That's exactly what GEPA's mutation gating would catch: if a candidate prompt increases tool calls without improving the quality score on a held-out validation set, the mutation is rejected. Without that gate, the refiner optimizes the proxy (data coverage) rather than the objective (output quality).</p>
+
+<h3>Tool Calls Per Question Across Runs</h3>
+<div class="bars">
+  <div class="bar-row"><div class="bar-lbl">Q1 Baseline</div><div class="bar-track"><div class="bar-fill kiss" style="width:48%">10</div></div></div>
+  <div class="bar-row"><div class="bar-lbl">Q1 Evo #1</div><div class="bar-track"><div class="bar-fill evo1" style="width:81%">17</div></div></div>
+  <div class="bar-row"><div class="bar-lbl">Q1 Evo #2</div><div class="bar-track"><div class="bar-fill evo2" style="width:100%">21</div></div></div>
+</div>
+<div class="bars" style="margin-top:8px">
+  <div class="bar-row"><div class="bar-lbl">Q2 Baseline</div><div class="bar-track"><div class="bar-fill kiss" style="width:33%">7</div></div></div>
+  <div class="bar-row"><div class="bar-lbl">Q2 Evo #1</div><div class="bar-track"><div class="bar-fill evo1" style="width:57%">12</div></div></div>
+  <div class="bar-row"><div class="bar-lbl">Q2 Evo #2</div><div class="bar-track"><div class="bar-fill evo2" style="width:52%">11</div></div></div>
+</div>
+<div class="bars" style="margin-top:8px">
+  <div class="bar-row"><div class="bar-lbl">Q3 Baseline</div><div class="bar-track"><div class="bar-fill kiss" style="width:74%">23</div></div></div>
+  <div class="bar-row"><div class="bar-lbl">Q3 Evo #1</div><div class="bar-track"><div class="bar-fill evo1" style="width:100%">33</div></div></div>
+  <div class="bar-row"><div class="bar-lbl">Q3 Evo #2</div><div class="bar-track"><div class="bar-fill evo2" style="width:94%">31</div></div></div>
+</div>
+
+<div class="box neutral">
+  <strong>Observation:</strong> The evolved prompts consistently increased tool call volume (13.3 &rarr; 20.7 &rarr; 21.0 avg). The refiner identified "fetch more data" as the primary improvement vector. Tokens roughly doubled (15.6K &rarr; 32.1K). Quality did not track with thoroughness in this run&mdash;Q1 regressed, Q2 improved, Q3 was flat.
+</div>
+
+<div class="sep"></div>
+
+<!-- ════════════════════ OBSERVATIONS ════════════════════ -->
+<h2>Observations (Not Conclusions)</h2>
+
+<p>The data raises several questions I find interesting but don't have enough runs to answer definitively:</p>
+
+<h3>On single-agent vs. multi-agent</h3>
+<ul>
+  <li>KISS was consistently faster and cheaper by significant margins (3.1x, 2.8x). This held across all 3 questions.</li>
+  <li>LangGraph scored higher quality on 2 of 3 questions (Q1, Q2), lower on 1 (Q3). The average favored LangGraph by 1.0 point.</li>
+  <li>The Q3 result (KISS 7, LG 6) is the most interesting data point&mdash;on the widest-scope question (7 tickers + macro risks), the multi-agent approach's 88 tool calls and 124K tokens correlated with <em>lower</em> quality, not higher. Whether this is signal or noise at n=1 is an open question.</li>
+  <li>LangGraph's researchers don't share context. For Q3, <code>get_stock_info("NVDA")</code> was called 4 times across different researchers. KISS called it once.</li>
+</ul>
+
+<h3>On prompt evolution</h3>
+<ul>
+  <li>The <code>prompt_refiner_agent</code> produced substantively different prompts each iteration&mdash;not just paraphrases. It identified real patterns from the trajectory (tool call sequencing, data coverage gaps, output structure).</li>
+  <li>The evolved prompts pushed the agent toward more tool calls and more data gathering, but this didn't consistently translate to higher quality scores.</li>
+  <li>Q1 regressed from 7 to 5 on the third run. The quality judge noted the report was "essentially a summary paragraph rather than a deep comparative analysis"&mdash;the agent spent its token budget on 21 tool calls and didn't have room for a full report.</li>
+  <li>Q2 improved from 6 to 7 on the third run. The judge noted it had "a specific entry range ($340-350) and risk factors"&mdash;more actionable than the baseline.</li>
+  <li>This is the <code>prompt_refiner_agent</code> (single-pass reflection), not the full GEPA optimizer. GEPA with Pareto frontiers, mutation gating, and a validation set would behave differently&mdash;specifically, it would catch regressions like Q1's and gate them out.</li>
+</ul>
+
+<h3>On the GEPA/DSPy comparison</h3>
+<ul>
+  <li>DSPy's GEPA implementation operates offline with a training set and metric function. KISS's <code>prompt_refiner_agent</code> operates online from a single trajectory&mdash;no training data required.</li>
+  <li>The trade-off is clear: DSPy-GEPA can optimize against a known objective; KISS's refiner can adapt without one. For production settings without labeled data, the trajectory-based approach is more immediately applicable.</li>
+  <li>I haven't tested KISS's full <code>GEPA</code> class (the one with Pareto frontiers) on this benchmark yet. That would be a more apples-to-apples comparison with DSPy's implementation and would likely show different evolution dynamics.</li>
+</ul>
+
+<div class="sep"></div>
+
+<!-- ════════════════════ SYNTHESIS ════════════════════ -->
+<h2>If You Had to Pick</h2>
+
+<p>With n=1 caveats firmly in place, the data points toward a practical heuristic. <strong>For latency- or cost-constrained workflows where "good enough" quality is acceptable, KISS's single-agent approach is hard to beat</strong>&mdash;88 seconds and $0.73 vs 274 seconds and $2.04 for comparable output. <strong>For breadth-first research where sub-questions are genuinely independent</strong>, LangGraph's parallel pipeline earns its overhead; the dedicated researcher-per-subtopic model helped on Q1 and Q2. The Q3 result suggests the flip side: when sub-questions <em>aren't</em> independent (all 7 tickers share the same tools and context), the parallelism backfires into redundant work and context fragmentation.</p>
+
+<p>On prompt evolution: the <code>prompt_refiner_agent</code> is a useful diagnostic&mdash;it accurately identifies what your agent is under-doing in the current run. But without a quality gate it optimizes for the proxy rather than the objective. Treat it as a first-pass signal about where your system prompt has gaps, not as a self-contained optimizer. For that, you want the full GEPA loop with a validation set and mutation gating.</p>
+
+<div class="sep"></div>
+
+<!-- ════════════════════ OPEN QUESTIONS ════════════════════ -->
+<h2>Open Questions for Further Exploration</h2>
+
+<ul>
+  <li>With more runs (n=5+), does the prompt evolution show a clearer quality trend? The current n=1 per cell is noisy.</li>
+  <li>Does KISS's full GEPA optimizer (with Pareto frontiers and mutation gating) produce different evolution dynamics than the single-pass refiner?</li>
+  <li>The quality judge is the same model doing the work&mdash;how much does this bias the scores?</li>
+  <li>Would a hybrid approach (KISS-style single agent with LangGraph-style explicit data gathering phases) capture the efficiency of one and the coverage of the other?</li>
+  <li>How do these results change with a smaller/cheaper model (Haiku, Sonnet) where the cost differential matters more?</li>
+  <li>Can the prompt evolution budget be constrained (e.g., "improve quality but keep tool calls under 15") to prevent the thoroughness-at-the-expense-of-output regression seen in Q1?</li>
+</ul>
+
+<div class="sep"></div>
+
+<!-- ════════════════════ REPRODUCE ════════════════════ -->
+<h2>Reproduce These Results</h2>
+
+<p>Both benchmarks are open source. The code uses actual framework imports (<code>KISSAgent.run()</code>, <code>StateGraph.compile()</code>), not API simulations.</p>
+
+<div class="code"><span class="c"># Clone and install (requires Python 3.13+ for KISS)</span>
+git clone https://github.com/tamtam0/kiss-vs-langgraph.git &amp;&amp; cd kiss-vs-langgraph
+pip install kiss-ai anthropic yfinance langgraph langchain-anthropic duckduckgo-search
+
+<span class="c"># Set your API key</span>
+<span class="k">export</span> ANTHROPIC_API_KEY=<span class="s">"your-key"</span>
+
+<span class="c"># Experiment 1: KISS vs LangGraph (single run)</span>
+python3 benchmarks/bench_real.py
+
+<span class="c"># Experiment 2: KISS prompt evolution (3 runs per question)</span>
+python3 benchmarks/bench_evolution.py
+
+<span class="c"># Results:</span>
+<span class="c"># benchmarks/benchmark_real_results.json</span>
+<span class="c"># benchmarks/benchmark_evolution_results.json</span></div>
+
+<p>Both scripts support Databricks-hosted endpoints via <code>ANTHROPIC_BASE_URL</code> and <code>ANTHROPIC_AUTH_TOKEN</code> environment variables. Edit <code>BENCHMARK_QUESTIONS</code> in either file to test your own scenarios.</p>
+
+<div class="box amber">
+  <strong>Methodology note:</strong> All results from single benchmark runs, March 2026. Quality scores are LLM-judged (same Claude Opus 4.6 model, same rubric for both frameworks). Tool calls use live Yahoo Finance data and DuckDuckGo web search. n=1 per cell for the framework comparison, n=3 sequential runs per question for the evolution experiment. Results will vary with different models, market conditions, and question complexity. <a href="https://github.com/tamtam0/kiss-vs-langgraph/tree/main/benchmarks">Full code and raw data on GitHub.</a>
+</div>
+
+</div>
+
+<!-- ════════════════════ FOOTER ════════════════════ -->
+<div class="footer">
+  <strong>Benchmark code &amp; data:</strong> <a href="https://github.com/tamtam0/kiss-vs-langgraph/tree/main/benchmarks">github.com/tamtam0/kiss-vs-langgraph</a><br>
+  <strong>KISS Framework:</strong> <a href="https://github.com/ksenxx/kiss_ai">github.com/ksenxx/kiss_ai</a> (Apache 2.0)<br>
+  <strong>LangGraph ODR:</strong> <a href="https://github.com/langchain-ai/open_deep_research">github.com/langchain-ai/open_deep_research</a><br>
+  <strong>GEPA Paper:</strong> <a href="https://arxiv.org/abs/2507.19457">arXiv:2507.19457</a> &mdash; Reflective Prompt Evolution Can Outperform Reinforcement Learning<br>
+  <strong>DSPy:</strong> <a href="https://github.com/stanfordnlp/dspy">github.com/stanfordnlp/dspy</a>
+</div>
+
+</div>
+</body>
+</html>

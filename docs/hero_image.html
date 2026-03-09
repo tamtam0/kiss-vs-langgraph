@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="UTF-8">
+<title>Hero Image — Screenshot this at 1200x628</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #e8e8e8; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+  .canvas {
+    width: 1200px; height: 628px;
+    background: #ffffff;
+    position: relative; overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: #191919;
+  }
+
+  /* Subtle grid */
+  .canvas::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background-image:
+      linear-gradient(rgba(0,0,0,.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,0,0,.03) 1px, transparent 1px);
+    background-size: 80px 80px;
+  }
+
+  .inner { position: relative; z-index: 1; padding: 48px 60px; }
+
+  .eyebrow {
+    font-size: 13px; font-weight: 600; letter-spacing: 3px;
+    color: #0a66c2; margin-bottom: 14px; text-transform: uppercase;
+  }
+  .title {
+    font-size: 34px; font-weight: 700; line-height: 1.3;
+    max-width: 720px; margin-bottom: 10px; color: #191919;
+  }
+  .sub {
+    font-size: 14px; color: #666; max-width: 700px;
+  }
+
+  /* KPI cards */
+  .kpis {
+    display: flex; gap: 14px; margin-top: 28px;
+  }
+  .kpi {
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 14px 22px;
+    min-width: 150px;
+    text-align: center;
+  }
+  .kpi .v {
+    font-size: 36px; font-weight: 700; line-height: 1.1;
+  }
+  .kpi .v.b { color: #0a66c2; }
+  .kpi .v.a { color: #b24020; }
+  .kpi .l {
+    font-size: 11px; color: #666; margin-top: 4px;
+    text-transform: uppercase; letter-spacing: 0.6px;
+  }
+  .kpi .d {
+    font-size: 11px; color: #999; margin-top: 2px;
+  }
+
+  /* Two-column chart area */
+  .charts { margin-top: 24px; display: flex; gap: 40px; }
+  .chart-col { flex: 1; }
+  .chart-title { font-size: 13px; font-weight: 600; margin-bottom: 10px; color: #333; }
+  .brow { display: flex; align-items: center; gap: 8px; margin: 5px 0; }
+  .brow .ql { width: 24px; font-size: 11px; color: #999; text-align: right; }
+  .brow .track { flex: 1; height: 16px; background: #f0f0f0; border-radius: 3px; overflow: hidden; }
+  .brow .fill { height: 100%; border-radius: 3px; display: flex; align-items: center; padding-left: 6px; font-size: 10px; font-weight: 600; color: #fff; }
+  .fill.k { background: #0a66c2; }
+  .fill.l { background: #7c3aed; }
+
+  /* Right side: evolution */
+  .evo-panel {
+    position: absolute; right: 50px; bottom: 90px;
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 16px 20px;
+    width: 300px;
+  }
+  .evo-title {
+    font-size: 12px; font-weight: 600; color: #333; margin-bottom: 8px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .evo-row { display: flex; align-items: center; gap: 8px; margin: 4px 0; font-size: 12px; }
+  .evo-label { width: 80px; color: #666; text-align: right; }
+  .evo-bar { flex: 1; height: 14px; background: #f0f0f0; border-radius: 3px; overflow: hidden; }
+  .evo-fill { height: 100%; border-radius: 3px; display: flex; align-items: center; padding-left: 5px; font-size: 9px; font-weight: 600; color: #fff; }
+  .evo-fill.b1 { background: #0a66c2; }
+  .evo-fill.b2 { background: #2d8cf0; }
+  .evo-fill.b3 { background: #7ab8f5; }
+  .evo-note { font-size: 10px; color: #999; margin-top: 6px; }
+
+  /* Legend */
+  .legend {
+    position: absolute; bottom: 16px; left: 60px;
+    display: flex; gap: 20px; align-items: center;
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #999; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+  .legend-dot.k { background: #0a66c2; }
+  .legend-dot.l { background: #7c3aed; }
+
+  .foot {
+    position: absolute; bottom: 16px; right: 60px;
+    font-size: 11px; color: #bbb;
+  }
+</style>
+</head>
+<body>
+<div class="canvas">
+<div class="inner">
+
+  <div class="eyebrow">Empirical Exploration</div>
+  <div class="title">Comparing KISS vs LangGraph<br>Deep Research</div>
+  <div class="sub">KISS KISSAgent vs. LangGraph StateGraph &nbsp;|&nbsp; Claude Opus 4.6 &nbsp;|&nbsp; yfinance + Web Search &nbsp;|&nbsp; Prompt Evolution</div>
+
+  <div class="kpis">
+    <div class="kpi"><div class="v b">3.1x</div><div class="l">KISS Faster</div><div class="d">88s vs 274s</div></div>
+    <div class="kpi"><div class="v b">4.1x</div><div class="l">Fewer Tokens</div><div class="d">21K vs 85K</div></div>
+    <div class="kpi"><div class="v b">2.8x</div><div class="l">Lower Cost</div><div class="d">$0.73 vs $2.04</div></div>
+    <div class="kpi"><div class="v a">+1.0</div><div class="l">LG Quality Edge</div><div class="d">6.3 vs 7.3 / 10</div></div>
+  </div>
+
+  <div class="charts">
+    <div class="chart-col">
+      <div class="chart-title">Tool Calls per Question</div>
+      <div class="brow"><div class="ql">Q1</div><div class="track"><div class="fill k" style="width:15%">13</div></div></div>
+      <div class="brow"><div class="ql"></div><div class="track"><div class="fill l" style="width:49%">43</div></div></div>
+      <div class="brow"><div class="ql">Q2</div><div class="track"><div class="fill k" style="width:10%">9</div></div></div>
+      <div class="brow"><div class="ql"></div><div class="track"><div class="fill l" style="width:41%">36</div></div></div>
+      <div class="brow"><div class="ql">Q3</div><div class="track"><div class="fill k" style="width:26%">23</div></div></div>
+      <div class="brow"><div class="ql"></div><div class="track"><div class="fill l" style="width:100%">88</div></div></div>
+    </div>
+    <div class="chart-col">
+      <div class="chart-title">Cost per Question</div>
+      <div class="brow"><div class="ql">Q1</div><div class="track"><div class="fill k" style="width:24%">$0.64</div></div></div>
+      <div class="brow"><div class="ql"></div><div class="track"><div class="fill l" style="width:72%">$1.94</div></div></div>
+      <div class="brow"><div class="ql">Q2</div><div class="track"><div class="fill k" style="width:19%">$0.52</div></div></div>
+      <div class="brow"><div class="ql"></div><div class="track"><div class="fill l" style="width:55%">$1.48</div></div></div>
+      <div class="brow"><div class="ql">Q3</div><div class="track"><div class="fill k" style="width:38%">$1.03</div></div></div>
+      <div class="brow"><div class="ql"></div><div class="track"><div class="fill l" style="width:100%">$2.70</div></div></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Evolution panel -->
+<div class="evo-panel">
+  <div class="evo-title">Prompt Evolution (3 Runs)</div>
+  <div class="evo-row"><div class="evo-label">Quality</div>
+    <div class="evo-bar"><div class="evo-fill b1" style="width:67%">6.7</div></div>
+    <div class="evo-bar"><div class="evo-fill b2" style="width:67%">6.7</div></div>
+    <div class="evo-bar"><div class="evo-fill b3" style="width:63%">6.3</div></div>
+  </div>
+  <div class="evo-row"><div class="evo-label">Tool Calls</div>
+    <div class="evo-bar"><div class="evo-fill b1" style="width:63%">13.3</div></div>
+    <div class="evo-bar"><div class="evo-fill b2" style="width:99%">20.7</div></div>
+    <div class="evo-bar"><div class="evo-fill b3" style="width:100%">21.0</div></div>
+  </div>
+  <div class="evo-row"><div class="evo-label">Tokens</div>
+    <div class="evo-bar"><div class="evo-fill b1" style="width:49%">15.6K</div></div>
+    <div class="evo-bar"><div class="evo-fill b2" style="width:98%">31.6K</div></div>
+    <div class="evo-bar"><div class="evo-fill b3" style="width:100%">32.1K</div></div>
+  </div>
+  <div class="evo-note">Baseline &rarr; Evolution #1 &rarr; Evolution #2 (via prompt_refiner_agent)</div>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot k"></div>KISS KISSAgent (Single Agent)</div>
+  <div class="legend-item"><div class="legend-dot l"></div>LangGraph StateGraph (4-Stage Pipeline)</div>
+</div>
+
+<div class="foot">Real frameworks &middot; 3 finance questions &middot; yfinance + DuckDuckGo &middot; github.com/tamtam0/kiss-vs-langgraph</div>
+
+</div>
+</body>
+</html>

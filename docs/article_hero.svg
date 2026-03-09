@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 628" width="1200" height="628">
+  <defs>
+    <linearGradient id="kissGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#0a66c2"/>
+      <stop offset="100%" style="stop-color:#2d8cf0"/>
+    </linearGradient>
+    <linearGradient id="lgGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#7c3aed"/>
+      <stop offset="100%" style="stop-color:#a78bfa"/>
+    </linearGradient>
+    <linearGradient id="evo1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#2d8cf0"/>
+      <stop offset="100%" style="stop-color:#5bb5ff"/>
+    </linearGradient>
+    <linearGradient id="evo2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#7ab8f5"/>
+      <stop offset="100%" style="stop-color:#a8d4ff"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="628" fill="#ffffff"/>
+
+  <!-- Subtle grid -->
+  <g opacity="0.04" stroke="#000" stroke-width="0.5">
+    <line x1="0" y1="100" x2="1200" y2="100"/>
+    <line x1="0" y1="200" x2="1200" y2="200"/>
+    <line x1="0" y1="300" x2="1200" y2="300"/>
+    <line x1="0" y1="400" x2="1200" y2="400"/>
+    <line x1="0" y1="500" x2="1200" y2="500"/>
+    <line x1="200" y1="0" x2="200" y2="628"/>
+    <line x1="400" y1="0" x2="400" y2="628"/>
+    <line x1="600" y1="0" x2="600" y2="628"/>
+    <line x1="800" y1="0" x2="800" y2="628"/>
+    <line x1="1000" y1="0" x2="1000" y2="628"/>
+  </g>
+
+  <!-- Title -->
+  <text x="80" y="82" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="14" fill="#0a66c2" font-weight="600" letter-spacing="3">EMPIRICAL EXPLORATION</text>
+
+  <text x="80" y="128" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="36" fill="#191919" font-weight="700">Comparing KISS vs LangGraph</text>
+  <text x="80" y="170" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="36" fill="#191919" font-weight="700">Deep Research</text>
+
+  <text x="80" y="206" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="15" fill="#666">KISS KISSAgent vs. LangGraph StateGraph  |  Claude Opus 4.6  |  yfinance + Web Search  |  Prompt Evolution</text>
+
+  <!-- Metric Cards -->
+  <rect x="80" y="236" width="220" height="100" rx="10" fill="#f8f9fa" stroke="#e0e0e0" stroke-width="1"/>
+  <text x="190" y="278" font-family="system-ui, sans-serif" font-size="38" fill="#0a66c2" font-weight="700" text-anchor="middle">3.1x</text>
+  <text x="190" y="304" font-family="system-ui, sans-serif" font-size="12" fill="#666" text-anchor="middle">KISS FASTER</text>
+  <text x="190" y="324" font-family="system-ui, sans-serif" font-size="11" fill="#999" text-anchor="middle">88s vs 274s</text>
+
+  <rect x="314" y="236" width="220" height="100" rx="10" fill="#f8f9fa" stroke="#e0e0e0" stroke-width="1"/>
+  <text x="424" y="278" font-family="system-ui, sans-serif" font-size="38" fill="#0a66c2" font-weight="700" text-anchor="middle">4.1x</text>
+  <text x="424" y="304" font-family="system-ui, sans-serif" font-size="12" fill="#666" text-anchor="middle">FEWER TOKENS</text>
+  <text x="424" y="324" font-family="system-ui, sans-serif" font-size="11" fill="#999" text-anchor="middle">21K vs 85K</text>
+
+  <rect x="548" y="236" width="220" height="100" rx="10" fill="#f8f9fa" stroke="#e0e0e0" stroke-width="1"/>
+  <text x="658" y="278" font-family="system-ui, sans-serif" font-size="38" fill="#0a66c2" font-weight="700" text-anchor="middle">2.8x</text>
+  <text x="658" y="304" font-family="system-ui, sans-serif" font-size="12" fill="#666" text-anchor="middle">LOWER COST</text>
+  <text x="658" y="324" font-family="system-ui, sans-serif" font-size="11" fill="#999" text-anchor="middle">$0.73 vs $2.04</text>
+
+  <rect x="782" y="236" width="220" height="100" rx="10" fill="#f8f9fa" stroke="#e0e0e0" stroke-width="1"/>
+  <text x="892" y="278" font-family="system-ui, sans-serif" font-size="38" fill="#b24020" font-weight="700" text-anchor="middle">+1.0</text>
+  <text x="892" y="304" font-family="system-ui, sans-serif" font-size="12" fill="#666" text-anchor="middle">LG QUALITY EDGE</text>
+  <text x="892" y="324" font-family="system-ui, sans-serif" font-size="11" fill="#999" text-anchor="middle">6.3 vs 7.3 / 10</text>
+
+  <!-- Bar Chart: Tool Calls -->
+  <text x="80" y="376" font-family="system-ui, sans-serif" font-size="13" fill="#333" font-weight="600">Tool Calls per Question</text>
+
+  <text x="80" y="404" font-family="system-ui, sans-serif" font-size="11" fill="#999">Q1</text>
+  <rect x="110" y="392" width="88" height="16" rx="3" fill="url(#kissGrad)" opacity="0.9"/>
+  <text x="118" y="404" font-family="system-ui, sans-serif" font-size="10" fill="#fff" font-weight="600">13</text>
+  <rect x="110" y="412" width="293" height="16" rx="3" fill="url(#lgGrad)" opacity="0.9"/>
+  <text x="118" y="424" font-family="system-ui, sans-serif" font-size="10" fill="#fff" font-weight="600">43</text>
+
+  <text x="80" y="450" font-family="system-ui, sans-serif" font-size="11" fill="#999">Q2</text>
+  <rect x="110" y="438" width="61" height="16" rx="3" fill="url(#kissGrad)" opacity="0.9"/>
+  <text x="118" y="450" font-family="system-ui, sans-serif" font-size="10" fill="#fff" font-weight="600">9</text>
+  <rect x="110" y="458" width="245" height="16" rx="3" fill="url(#lgGrad)" opacity="0.9"/>
+  <text x="118" y="470" font-family="system-ui, sans-serif" font-size="10" fill="#fff" font-weight="600">36</text>
+
+  <text x="80" y="496" font-family="system-ui, sans-serif" font-size="11" fill="#999">Q3</text>
+  <rect x="110" y="484" width="157" height="16" rx="3" fill="url(#kissGrad)" opacity="0.9"/>
+  <text x="118" y="496" font-family="system-ui, sans-serif" font-size="10" fill="#fff" font-weight="600">23</text>
+  <rect x="110" y="504" width="600" height="16" rx="3" fill="url(#lgGrad)" opacity="0.9"/>
+  <text x="118" y="516" font-family="system-ui, sans-serif" font-size="10" fill="#fff" font-weight="600">88</text>
+
+  <!-- Evolution Panel -->
+  <rect x="750" y="362" width="370" height="200" rx="10" fill="#f8f9fa" stroke="#e0e0e0" stroke-width="1"/>
+  <text x="770" y="386" font-family="system-ui, sans-serif" font-size="12" fill="#333" font-weight="600" letter-spacing="0.5">PROMPT EVOLUTION (3 RUNS)</text>
+
+  <!-- Quality row -->
+  <text x="770" y="412" font-family="system-ui, sans-serif" font-size="11" fill="#666">Quality</text>
+  <rect x="840" y="400" width="80" height="14" rx="3" fill="url(#kissGrad)"/>
+  <text x="848" y="411" font-family="system-ui, sans-serif" font-size="9" fill="#fff" font-weight="600">6.7</text>
+  <rect x="926" y="400" width="80" height="14" rx="3" fill="url(#evo1)"/>
+  <text x="934" y="411" font-family="system-ui, sans-serif" font-size="9" fill="#fff" font-weight="600">6.7</text>
+  <rect x="1012" y="400" width="75" height="14" rx="3" fill="url(#evo2)"/>
+  <text x="1020" y="411" font-family="system-ui, sans-serif" font-size="9" fill="#fff" font-weight="600">6.3</text>
+
+  <!-- Tool Calls row -->
+  <text x="770" y="440" font-family="system-ui, sans-serif" font-size="11" fill="#666">Tool Calls</text>
+  <rect x="840" y="428" width="56" height="14" rx="3" fill="url(#kissGrad)"/>
+  <text x="848" y="439" font-family="system-ui, sans-serif" font-size="9" fill="#fff" font-weight="600">13.3</text>
+  <rect x="926" y="428" width="86" height="14" rx="3" fill="url(#evo1)"/>
+  <text x="934" y="439" font-family="system-ui, sans-serif" font-size="9" fill="#fff" font-weight="600">20.7</text>
+  <rect x="1012" y="428" width="88" height="14" rx="3" fill="url(#evo2)"/>
+  <text x="1020" y="439" font-family="system-ui, sans-serif" font-size="9" fill="#fff" font-weight="600">21.0</text>
+
+  <!-- Tokens row -->
+  <text x="770" y="468" font-family="system-ui, sans-serif" font-size="11" fill="#666">Tokens</text>
+  <rect x="840" y="456" width="44" height="14" rx="3" fill="url(#kissGrad)"/>
+  <text x="848" y="467" font-family="system-ui, sans-serif" font-size="9" fill="#fff" font-weight="600">15.6K</text>
+  <rect x="926" y="456" width="86" height="14" rx="3" fill="url(#evo1)"/>
+  <text x="934" y="467" font-family="system-ui, sans-serif" font-size="9" fill="#fff" font-weight="600">31.6K</text>
+  <rect x="1012" y="456" width="88" height="14" rx="3" fill="url(#evo2)"/>
+  <text x="1020" y="467" font-family="system-ui, sans-serif" font-size="9" fill="#fff" font-weight="600">32.1K</text>
+
+  <!-- Labels -->
+  <text x="860" y="498" font-family="system-ui, sans-serif" font-size="10" fill="#999">Baseline</text>
+  <text x="940" y="498" font-family="system-ui, sans-serif" font-size="10" fill="#999">Evo #1</text>
+  <text x="1024" y="498" font-family="system-ui, sans-serif" font-size="10" fill="#999">Evo #2</text>
+
+  <text x="770" y="540" font-family="system-ui, sans-serif" font-size="10" fill="#999">via KISS prompt_refiner_agent</text>
+
+  <!-- Legend -->
+  <rect x="110" y="544" width="14" height="14" rx="3" fill="url(#kissGrad)"/>
+  <text x="130" y="555" font-family="system-ui, sans-serif" font-size="11" fill="#666">KISS KISSAgent (Single Agent)</text>
+  <rect x="330" y="544" width="14" height="14" rx="3" fill="url(#lgGrad)"/>
+  <text x="350" y="555" font-family="system-ui, sans-serif" font-size="11" fill="#666">LangGraph StateGraph (4-Stage Pipeline)</text>
+
+  <!-- Footer -->
+  <text x="80" y="608" font-family="system-ui, sans-serif" font-size="11" fill="#bbb">Real frameworks  ·  3 finance questions  ·  yfinance + web search  ·  Claude Opus 4.6  ·  Prompt evolution  ·  github.com/tamtam0/kiss-vs-langgraph</text>
+</svg>
